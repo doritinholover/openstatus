@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openstatus-private-location
+  labels:
+    app.kubernetes.io/name: openstatus
+    app.kubernetes.io/component: private-location
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openstatus
+      app.kubernetes.io/component: private-location
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openstatus
+        app.kubernetes.io/component: private-location
+    spec:
+      containers:
+        - name: private-location
+          image: brunomassaini/openstatus-private-location:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          envFrom:
+            - secretRef:
+                name: openstatus-env
+          env:
+            - name: DB_URL
+              value: http://openstatus-libsql:8080
+            - name: TINYBIRD_URL
+              value: http://openstatus-tinybird:7181
+            - name: GIN_MODE
+              value: release
+            - name: PORT
+              value: "8080"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 20

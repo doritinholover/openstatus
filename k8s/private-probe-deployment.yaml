@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openstatus-private-probe
+  labels:
+    app.kubernetes.io/name: openstatus
+    app.kubernetes.io/component: private-probe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openstatus
+      app.kubernetes.io/component: private-probe
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openstatus
+        app.kubernetes.io/component: private-probe
+    spec:
+      containers:
+        - name: private-probe
+          image: brunomassaini/openstatus-private-probe:latest
+          imagePullPolicy: IfNotPresent
+          envFrom:
+            - secretRef:
+                name: openstatus-env
+          env:
+            - name: OPENSTATUS_INGEST_URL
+              value: http://openstatus-private-location:8080

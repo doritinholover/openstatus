@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openstatus-libsql
+  labels:
+    app.kubernetes.io/name: openstatus
+    app.kubernetes.io/component: libsql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openstatus
+      app.kubernetes.io/component: libsql
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openstatus
+        app.kubernetes.io/component: libsql
+    spec:
+      containers:
+        - name: libsql
+          image: ghcr.io/tursodatabase/libsql-server:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 5001
+              name: grpc
+          env:
+            - name: SQLD_NODE
+              value: primary
+          volumeMounts:
+            - name: libsql-data
+              mountPath: /var/lib/sqld
+          readinessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 20
+      volumes:
+        - name: libsql-data
+          persistentVolumeClaim:
+            claimName: openstatus-libsql-data

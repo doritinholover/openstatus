@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: openstatus-tinybird
+  labels:
+    app.kubernetes.io/name: openstatus
+    app.kubernetes.io/component: tinybird
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: openstatus
+    app.kubernetes.io/component: tinybird
+  ports:
+    - name: http
+      port: 7181
+      targetPort: 7181

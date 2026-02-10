@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openstatus-tinybird
+  labels:
+    app.kubernetes.io/name: openstatus
+    app.kubernetes.io/component: tinybird
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openstatus
+      app.kubernetes.io/component: tinybird
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openstatus
+        app.kubernetes.io/component: tinybird
+    spec:
+      containers:
+        - name: tinybird
+          image: tinybirdco/tinybird-local:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 7181
+              name: http
+          env:
+            - name: COMPATIBILITY_MODE
+              value: "1"
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 7181
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 7181
+            initialDelaySeconds: 20
+            periodSeconds: 20

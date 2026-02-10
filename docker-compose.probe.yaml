@@ -1,0 +1,17 @@
+services:
+  private-probe:
+    container_name: openstatus-private-probe
+    build:
+      context: .
+      dockerfile: apps/checker/private-location.Dockerfile
+    image: openstatus/private-probe:latest
+    networks:
+      - openstatus
+    env_file:
+      - .env.docker
+    environment:
+      - OPENSTATUS_INGEST_URL=http://private-location:8080
+    depends_on:
+      private-location:
+        condition: service_healthy
+    restart: unless-stopped

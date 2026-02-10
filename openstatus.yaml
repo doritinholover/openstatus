@@ -1,0 +1,38 @@
+# yaml-language-server: $schema=https://www.openstatus.dev/schema.json
+# Edit the URLs, methods, and assertions for your own endpoints.
+
+homepage:
+  name: "Homepage"
+  description: "Public homepage availability"
+  frequency: "1m"
+  active: true
+  regions: ["iad", "ams", "lax"]
+  retry: 3
+  kind: http
+  request:
+    url: https://example.com/
+    method: GET
+    headers:
+      User-Agent: openstatus
+  assertions:
+    - kind: statusCode
+      compare: eq
+      target: 200
+
+api-health:
+  name: "API Health"
+  description: "API health endpoint"
+  frequency: "1m"
+  active: true
+  regions: ["iad", "ams", "lax"]
+  retry: 3
+  kind: http
+  request:
+    url: https://api.example.com/health
+    method: GET
+    headers:
+      User-Agent: openstatus
+  assertions:
+    - kind: statusCode
+      compare: eq
+      target: 200
